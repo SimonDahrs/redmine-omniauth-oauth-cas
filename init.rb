@@ -11,10 +11,10 @@ Redmine::Plugin.register :redmine_omniauth_isu do
   author_url 'http://www.ifmo.ru'
 
   settings :default => {
-    :client_id => "",
-    :client_secret => "",
-    :url => "",
-    :oauth_autentification => false
+    :client_id => "3",
+    :client_secret => "dummy_secret",
+    :url => "td5-02.tetra.nl",
+    :oauth_autentification => true
   }, :partial => 'settings/isu_settings'
 
   Rails.configuration.to_prepare do
