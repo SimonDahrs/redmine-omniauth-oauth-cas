@@ -4,7 +4,7 @@ require 'openssl'
 require 'uri'
 require 'securerandom'
 
-OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE # comment this line if your OAuth provider has GOOD SSL certificate
+#OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE # comment this line if your OAuth provider has GOOD SSL certificate
 
 ENV["http_proxy"]="" # comment this line if
 
@@ -21,7 +21,7 @@ class RedmineOauthController < AccountController
       uri = URI::parse(oauth_isu_callback_url)
       hash = {:response_type => "code",
               :client_id => settings[:client_id],
-              :redirect_uri => uri.path,
+              :redirect_uri => uri.to_s,
               :state => state}
       param_arr = []
       hash.each do |key, val|
