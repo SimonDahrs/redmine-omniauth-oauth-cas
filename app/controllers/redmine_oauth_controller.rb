@@ -71,7 +71,11 @@ class RedmineOauthController < AccountController
         roles = JSON.parse(roles_req.body)
         #Login
         if info
-          try_to_login(info, roles)
+		  if roles.include? 'rm_access'
+             try_to_login(info, roles)
+		  else
+		     flash[:error] = 'Geen toegang tot Redmine'
+		  end
         else
           flash[:error] = l(:notice_unable_to_obtain_isu_credentials)
           redirect_to signin_path
@@ -88,28 +92,27 @@ class RedmineOauthController < AccountController
     user = User.where(:login => info["email"]).first_or_create
     if user.new_record?
       # Check if logged in user has te right role(=create_account) to create an account
-      if !roles.include? 'create_account'
-        flash[:error] = 'Geen toegang tot Redmine.'
-      else
+      #if !roles.include? 'create_account'
+      #  flash[:error] = 'Geen toegang tot Redmine.'
+      #else
         # Create on the fly
-        user.firstname = info["first_name"]
-        user.lastname = info["last_name"]
-        user.mail = info["email"]
-        user.login = info["email"]
-        user.random_password
-        user.register
+		user.firstname = info["first_name"]
+		user.lastname = info["last_name"]
+		user.mail = info["email"]
+		user.login = info["email"]
+		user.random_password
+		user.register
 
-        # Here is some really dirty coding, because we override Redmine registration policies
-        user.activate
-        user.last_login_on = Time.now
-        if user.save
-          self.logged_user = user
-          flash[:notice] = l(:notice_account_activated)
-          redirect_to my_account_path
-        else
-          yield if block_given?
-        end
-      end
+		# Here is some really dirty coding, because we override Redmine registration policies
+		user.activate
+		user.last_login_on = Time.now
+		if user.save
+		  self.logged_user = user
+		  flash[:notice] = l(:notice_account_activated)
+		  redirect_to my_account_path
+		else
+		  yield if block_given?
+		end
     else
       # Existing record
       if user.active?
